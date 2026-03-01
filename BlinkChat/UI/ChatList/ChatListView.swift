@@ -23,7 +23,7 @@ struct ChatListView: View {
                     )
                 } else {
                     List(viewModel.chats) { chat in
-                        Text(chat.name)
+                            ChatRow(for: chat)
                     }
                 }
             }
