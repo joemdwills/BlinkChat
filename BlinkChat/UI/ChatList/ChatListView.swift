@@ -23,11 +23,22 @@ struct ChatListView: View {
                     )
                 } else {
                     List(viewModel.chats) { chat in
+                        NavigationLink(value: chat) {
                             ChatRow(for: chat)
+                        }
                     }
                 }
             }
             .navigationTitle("Conversations")
+            .navigationDestination(for: Chat.self) { chat in
+                ChatDetail(
+                    viewModel: ChatDetailViewModel(
+                        chatId: chat.id,
+                        chatName: chat.name,
+                        repository: chatRepository
+                    )
+                )
+            }
             .task {
                 await viewModel.loadChats()
             }
