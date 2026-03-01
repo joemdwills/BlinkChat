@@ -10,8 +10,10 @@ struct ChatDetail: View {
                     MessageRow(message: message)
                         .id(message.id)
                         .listRowSeparator(Visibility.hidden)
+                        .accessibilityIdentifier(A11yIdentifier.ChatDetail.message(id: message.id))
                 }
                 .listStyle(.plain)
+                .accessibilityIdentifier(A11yIdentifier.ChatDetail.messages)
                 .onChange(of: viewModel.messages.count) {
                     if let lastId = viewModel.messages.last?.id {
                         withAnimation {
@@ -33,6 +35,7 @@ struct ChatDetail: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(viewModel.messageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                .accessibilityIdentifier(A11yIdentifier.ChatDetail.sendButton)
             }
             .padding()
         }

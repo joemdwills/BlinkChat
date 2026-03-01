@@ -16,6 +16,7 @@ struct MessageEditor: UIViewRepresentable {
         textView.textContainerInset = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
         textView.textContainer.lineFragmentPadding = 0
         textView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        textView.accessibilityIdentifier = A11yIdentifier.ChatDetail.messageEditor
         
         if text.isEmpty {
             textView.text = placeholder

@@ -26,7 +26,9 @@ struct ChatListView: View {
                         NavigationLink(value: chat) {
                             ChatRow(for: chat)
                         }
+                        .accessibilityIdentifier(A11yIdentifier.Chats.chat(id: chat.id))
                     }
+                    .accessibilityIdentifier(A11yIdentifier.Chats.list)
                 }
             }
             .navigationTitle("Conversations")
