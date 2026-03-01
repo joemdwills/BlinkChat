@@ -17,6 +17,11 @@ final class ChatDetailViewModel {
         self.repository = repository
     }
 
+    var hasError: Bool {
+        get { error != nil }
+        set { if !newValue { error = nil } }
+    }
+
     func loadMessages() async {
         isLoading = true
         error = nil
@@ -31,13 +36,14 @@ final class ChatDetailViewModel {
     func sendMessage() async {
         let text = messageText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return }
-
+        
         messageText = ""
-
+        
         do {
             let message = try await repository.sendMessage(chatId: chatId, text: text)
             messages.append(message)
         } catch {
+            messageText = text
             self.error = error
         }
     }

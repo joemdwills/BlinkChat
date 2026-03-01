@@ -12,6 +12,11 @@ final class ChatListViewModel {
         self.repository = repository
     }
 
+    var hasError: Bool {
+        get { error != nil }
+        set { if !newValue { error = nil } }
+    }
+
     func loadChats() async {
         isLoading = true
         error = nil

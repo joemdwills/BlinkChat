@@ -42,6 +42,11 @@ struct ChatListView: View {
             .task {
                 await viewModel.loadChats()
             }
+            .alert("Something went wrong", isPresented: $viewModel.hasError) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(viewModel.error?.localizedDescription ?? "")
+            }
         }
     }
 }
