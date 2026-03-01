@@ -9,19 +9,27 @@ final class BlinkChatUITests: XCTestCase {
     override func tearDownWithError() throws { }
 
     @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
+    func testSendMessageFlow() throws {
         let app = XCUIApplication()
+        app.launchArguments = ["--uitesting"]
         app.launch()
-
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-    }
-
-    @MainActor
-    func testLaunchPerformance() throws {
-        // This measures how long it takes to launch your application.
-        measure(metrics: [XCTApplicationLaunchMetric()]) {
-            XCUIApplication().launch()
-        }
+        
+        // MockChatRepository.shared.setupDefaultTestData() is called automatically
+        // with the following test data:
+        // - Chat ID "1" with messages "msg1" and "msg2"
+        // - Chat ID "2" with message "msg3"
+        
+        let testMessage = "Hello from UI Test"
+        
+        ChatListScreen(app: app)
+            .assertConversationsExist()
+            .tapConversation(id: "1")
+        
+        ChatDetailScreen(app: app)
+            .assertDetailViewLoaded()
+            .typeMessage(testMessage)
+            .tapSendButton()
+            .assertMessageExists(withText: testMessage)
+            .assertMessageIsLast(withText: testMessage)
     }
 }

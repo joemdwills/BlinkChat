@@ -8,18 +8,45 @@ struct BlinkChatApp: App {
     let chatRepository: any ChatRepositoryProtocol
     
     init() {
-        do {
-            let container = try ModelContainer(for: Chat.self, Message.self)
-            self.modelContainer = container
+        // Check if running UI tests
+         let isUITesting = CommandLine.arguments.contains("--uitesting")
+        
+        if isUITesting {
+            // Use mock repository for UI tests - no SwiftData needed
+            do {
+                // Still need a container for the modelContainer modifier, but it won't be used
+                let container = try ModelContainer(
+                    for: Chat.self, Message.self,
+                    configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+                )
+                self.modelContainer = container
+            } catch {
+                fatalError("Failed to initialize ModelContainer: \(error)")
+            }
             
-            let chatListRepo = ChatListRepository(modelContainer: container)
-            let chatRepo = ChatRepository(modelContainer: container)
-            self.chatListRepository = chatListRepo
-            self.chatRepository = chatRepo
+            // Use shared mock repositories and set up default test data
+            let mockChatListRepo = MockChatListRepository.shared
+            let mockChatRepo = MockChatRepository.shared
+            self.chatListRepository = mockChatListRepo
+            self.chatRepository = mockChatRepo
             
-            chatListRepo.migrateInitialDataIfNeeded()
-        } catch {
-            fatalError("Failed to initialize ModelContainer: \(error)")
+            mockChatListRepo.setupDefaultTestData()
+            mockChatRepo.setupDefaultTestData()
+        } else {
+            // Production: use real SwiftData repositories
+            do {
+                let container = try ModelContainer(for: Chat.self, Message.self)
+                self.modelContainer = container
+                
+                let chatListRepo = ChatListRepository(modelContainer: container)
+                let chatRepo = ChatRepository(modelContainer: container)
+                self.chatListRepository = chatListRepo
+                self.chatRepository = chatRepo
+                
+                chatListRepo.migrateInitialDataIfNeeded()
+            } catch {
+                fatalError("Failed to initialize ModelContainer: \(error)")
+            }
         }
     }
 
