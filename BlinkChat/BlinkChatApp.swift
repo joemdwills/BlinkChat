@@ -5,6 +5,7 @@ import SwiftData
 struct BlinkChatApp: App {
     let modelContainer: ModelContainer
     let chatListRepository: any ChatListRepositoryProtocol
+    let chatRepository: any ChatRepositoryProtocol
     
     init() {
         do {
@@ -12,7 +13,9 @@ struct BlinkChatApp: App {
             self.modelContainer = container
             
             let chatListRepo = ChatListRepository(modelContainer: container)
+            let chatRepo = ChatRepository(modelContainer: container)
             self.chatListRepository = chatListRepo
+            self.chatRepository = chatRepo
             
             chatListRepo.migrateInitialDataIfNeeded()
         } catch {
@@ -24,6 +27,7 @@ struct BlinkChatApp: App {
         WindowGroup {
             ChatListView(
                 chatListRepository: chatListRepository,
+                chatRepository: chatRepository
             )
         }
         .modelContainer(modelContainer)

@@ -4,9 +4,11 @@ struct ChatListView: View {
     @State private var viewModel: ChatListViewModel
 
     private let chatListRepository: any ChatListRepositoryProtocol
+    private let chatRepository: any ChatRepositoryProtocol
 
-    init(chatListRepository: any ChatListRepositoryProtocol) {
+    init(chatListRepository: any ChatListRepositoryProtocol, chatRepository: any ChatRepositoryProtocol) {
         self.chatListRepository = chatListRepository
+        self.chatRepository = chatRepository
         self._viewModel = State(initialValue: ChatListViewModel(repository: chatListRepository))
     }
 
@@ -35,12 +37,14 @@ struct ChatListView: View {
 #Preview("With Conversations") {
     ChatListView(
         chatListRepository: PreviewChatListRepository(hasData: true),
+        chatRepository: PreviewChatRepository(hasData: true)
     )
 }
 
 #Preview("Empty State") {
     ChatListView(
         chatListRepository: PreviewChatListRepository(hasData: false),
+        chatRepository: PreviewChatRepository(hasData: false)
     )
 }
 
@@ -73,4 +77,27 @@ private struct PreviewChatListRepository: ChatListRepositoryProtocol {
     }
 }
 
+private struct PreviewChatRepository: ChatRepositoryProtocol {
+    let hasData: Bool
+    
+    func fetchMessages(chatId: String) async throws -> [Message] {
+        guard hasData else { return [] }
+        
+        return [
+            Message(
+                id: "1",
+                text: "Hello!",
+                lastUpdated: Date()
+            )
+        ]
+    }
+    
+    func sendMessage(chatId: String, text: String) async throws -> Message {
+        Message(
+            id: UUID().uuidString,
+            text: text,
+            lastUpdated: Date()
+        )
+    }
+}
 
